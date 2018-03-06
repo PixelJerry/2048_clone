@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <link href="https://fonts.googleapis.com/css?family=Montserrat" rel="stylesheet">
+    <link href="./css/style.css" rel="stylesheet">
+
+    <title>2048 Clone</title>
+</head>
+<body>
+    <div id="stage">
+        <div id="game">
+            <div id="game-over">
+                <div class="title"></div>
+                <div class="sub-title"></div>
+                <div id="retry-button" role="button"></div>
+            </div>
+            <div id="how-to-info">
+                    <div class="title">How to play</div>
+                    <div class="content">
+                        Move the tiles on the board with the arrow keys<br/>
+                        Merge tiles with equal values<br/>
+                        Try and get a tile with a value of 2048
+                    </div>
+                    <div class="title">About</div>
+                    <div class="content">
+                        I created this 2048 clone after watching Danile Shiffman's 2048 Coding Challenge as a way to check out the new ES6 features.<br/>
+                        <br/>
+                        I hope you enjoy playing it as much as I enjoyed making it!
+                    </div>
+                    <div id="start-button" role="button">Start</div>
+                </div>
+        </div>
+        <div id="credits">
+                2048 clone made by <a href="https://twitter.com/Pixel_Jerry" target="_blank">Jeremy de Reuck</a><br/>
+                Inspired by Daniel Shiffman's <a href="https://www.youtube.com/watch?v=JSn-DJU8qf0" target="_blank">2048 Coding Challenge</a>
+            </div>
+    </div>
+</body>
+
+<script src="./js/utils.js"></script>
+<script src="./js/game.js"></script>
+<script src="./js/grid.js"></script>
+<script src="./js/tile.js"></script>
+<script src="./js/vector.js"></script>
+
+<script src="./js/main.js"></script>
+</html>
