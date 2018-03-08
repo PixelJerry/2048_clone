@@ -2,6 +2,9 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
+var radianToDegree = 180 / Math.PI;
+var degreeToRadian = Math.PI / 180;
+
 function createDiv(content, classList, left, top) {
     var div = document.createElement("div");
 
@@ -53,6 +56,11 @@ var Game = function () {
 
             this.restarting = false;
             this.numberMoves = 1;
+
+            this.touchStartPoint = new Vector();
+            this.touchEndPoint = new Vector();
+            this.moveThreshold = 100;
+            this.moveAngleThreshold = 20;
         } else {
             console.error("Can not have more than one Game running at the same time");
         }
@@ -147,6 +155,78 @@ var Game = function () {
         value: function addKeyboardListeners() {
             document.addEventListener("keydown", window.gameRef.keyDown);
             // document.addEventListener("keyup", window.gameRef.keyUp);
+            document.addEventListener("touchstart", window.gameRef.touchStart);
+            document.addEventListener("touchend", window.gameRef.touchEnd);
+        }
+    }, {
+        key: "touchStart",
+        value: function touchStart(event) {
+            //console.log("Touch start: (" + event.changedTouches[0].clientX + "," + event.changedTouches[0].clientY + ")");
+            window.gameRef.touchStartPoint.x = event.changedTouches[0].clientX;
+            window.gameRef.touchStartPoint.y = event.changedTouches[0].clientY;
+        }
+    }, {
+        key: "touchEnd",
+        value: function touchEnd(event) {
+            //console.log("Touch start: (" + event.changedTouches[0].clientX + "," + event.changedTouches[0].clientY + ")");
+            window.gameRef.touchEndPoint.x = event.changedTouches[0].clientX;
+            window.gameRef.touchEndPoint.y = event.changedTouches[0].clientY;
+
+            var directionVector = Vector.subtract(window.gameRef.touchEndPoint, window.gameRef.touchStartPoint);
+            console.log(directionVector.sqrMagnitude + " > " + window.gameRef.moveThresholdSqr);
+
+            var angle = directionVector.angle * radianToDegree;
+
+            if (directionVector.sqrMagnitude > window.gameRef.moveThresholdSqr) {
+                if (directionVector.y > 0) {
+                    // UP
+                    // Top Left
+                    if (angle > 0) {
+                        if (Math.abs(angle) < window.gameRef.moveAngleThreshold) {
+                            // console.log("right");
+                            window.gameRef.rightButtonDown();
+                        } else if (Math.abs(angle) > 90 - window.gameRef.moveAngleThreshold) {
+                            // console.log("Down");
+                            window.gameRef.downButtonDown();
+                        }
+                    } else {
+                        // Top right
+                        if (Math.abs(angle) < window.gameRef.moveAngleThreshold) {
+                            // console.log("left");
+                            window.gameRef.leftButtonDown();
+                        } else if (Math.abs(angle) > 90 - window.gameRef.moveAngleThreshold) {
+                            // console.log("Down");
+                            window.gameRef.downButtonDown();
+                        }
+                    }
+                } else {
+                    // Down
+                    // Bottom Right
+                    if (angle > 0) {
+                        if (Math.abs(angle) < window.gameRef.moveAngleThreshold) {
+                            // console.log("left");
+                            window.gameRef.leftButtonDown();
+                        } else if (Math.abs(angle) > 90 - window.gameRef.moveAngleThreshold) {
+                            // console.log("Up");
+                            window.gameRef.upButtonDown();
+                        }
+                    } else {
+                        // Bottom left
+                        if (Math.abs(angle) < window.gameRef.moveAngleThreshold) {
+                            // console.log("right");
+                            window.gameRef.rightButtonDown();
+                        } else if (Math.abs(angle) > 90 - window.gameRef.moveAngleThreshold) {
+                            // console.log("Up");
+                            window.gameRef.upButtonDown();
+                        }
+                    }
+                }
+            }
+
+            // if (directionVector.sqrMagnitude > window.gameRef.moveThresholdSqr){
+            //     // console.log("direction vector: (" + directionVector.x + ", " + directionVector.y + ")");
+            //     console.log("angle: " + angle);
+            // }
         }
     }, {
         key: "keyDown",
@@ -302,6 +382,11 @@ var Game = function () {
                     _this.gameOverElem.style.visibility = "hidden";
                 }, 300);
             }
+        }
+    }, {
+        key: "moveThresholdSqr",
+        get: function get() {
+            return this.moveThreshold * this.moveThreshold;
         }
     }, {
         key: "gameOver",
@@ -992,6 +1077,11 @@ var Vector = function () {
         key: "magnitude",
         get: function get() {
             return Math.sqrt(this.sqrMagnitude);
+        }
+    }, {
+        key: "angle",
+        get: function get() {
+            return Math.atan(this.y / this.x);
         }
     }], [{
         key: "add",
