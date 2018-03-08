@@ -23,6 +23,11 @@ class Game {
 
             this.restarting = false;
             this.numberMoves = 1;
+
+            this.touchStartPoint = new Vector();
+            this.touchEndPoint = new Vector();
+            this.moveThreshold = 100;
+            this.moveAngleThreshold = 20;
         }
         else
         {
@@ -31,6 +36,8 @@ class Game {
     }
 
     static get deltaTime(){return 1000 / 60;}
+
+    get moveThresholdSqr(){ return this.moveThreshold * this.moveThreshold; }
 
     start(){
         for (let i = 0; i <= this.grid.rows; i++){
@@ -98,9 +105,84 @@ class Game {
 
     addKeyboardListeners(){
 		document.addEventListener("keydown", window.gameRef.keyDown);
-		// document.addEventListener("keyup", window.gameRef.keyUp);
+        // document.addEventListener("keyup", window.gameRef.keyUp);
+        document.addEventListener("touchstart", window.gameRef.touchStart);
+        document.addEventListener("touchend", window.gameRef.touchEnd);
     }
     
+    touchStart(event){
+        //console.log("Touch start: (" + event.changedTouches[0].clientX + "," + event.changedTouches[0].clientY + ")");
+        window.gameRef.touchStartPoint.x = event.changedTouches[0].clientX;
+        window.gameRef.touchStartPoint.y = event.changedTouches[0].clientY;
+    }
+
+    touchEnd(event){
+        //console.log("Touch start: (" + event.changedTouches[0].clientX + "," + event.changedTouches[0].clientY + ")");
+        window.gameRef.touchEndPoint.x = event.changedTouches[0].clientX;
+        window.gameRef.touchEndPoint.y = event.changedTouches[0].clientY;
+
+        let directionVector = Vector.subtract(window.gameRef.touchEndPoint, window.gameRef.touchStartPoint);
+        console.log(directionVector.sqrMagnitude + " > " + window.gameRef.moveThresholdSqr);
+
+        let angle = directionVector.angle * radianToDegree;
+
+        if (directionVector.sqrMagnitude > window.gameRef.moveThresholdSqr){
+            if (directionVector.y > 0){
+                // UP
+                // Top Left
+                if (angle > 0){
+                    if (Math.abs(angle) < window.gameRef.moveAngleThreshold){
+                        // console.log("right");
+                        window.gameRef.rightButtonDown();
+                    }
+                    else if (Math.abs(angle) > 90 - window.gameRef.moveAngleThreshold){
+                        // console.log("Down");
+                        window.gameRef.downButtonDown();
+                    }
+                }
+                else{ // Top right
+                    if (Math.abs(angle) < window.gameRef.moveAngleThreshold){
+                        // console.log("left");
+                        window.gameRef.leftButtonDown();
+                    }
+                    else if (Math.abs(angle) > 90 - window.gameRef.moveAngleThreshold){
+                        // console.log("Down");
+                        window.gameRef.downButtonDown();
+                    }
+                }
+            }
+            else{
+                // Down
+                // Bottom Right
+                if (angle > 0){
+                    if (Math.abs(angle) < window.gameRef.moveAngleThreshold){
+                        // console.log("left");
+                        window.gameRef.leftButtonDown();
+                    }
+                    else if (Math.abs(angle) > 90 - window.gameRef.moveAngleThreshold){
+                        // console.log("Up");
+                        window.gameRef.upButtonDown();
+                    }
+                }
+                else{ // Bottom left
+                    if (Math.abs(angle) < window.gameRef.moveAngleThreshold){
+                        // console.log("right");
+                        window.gameRef.rightButtonDown();
+                    }
+                    else if (Math.abs(angle) > 90 - window.gameRef.moveAngleThreshold){
+                        // console.log("Up");
+                        window.gameRef.upButtonDown();
+                    }
+                }
+            }
+        }
+
+        // if (directionVector.sqrMagnitude > window.gameRef.moveThresholdSqr){
+        //     // console.log("direction vector: (" + directionVector.x + ", " + directionVector.y + ")");
+        //     console.log("angle: " + angle);
+        // }
+    }
+
 	keyDown(event){
         // left arrow
          if (event.which === 37){

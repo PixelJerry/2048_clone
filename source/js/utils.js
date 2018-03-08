@@ -1,3 +1,6 @@
+var radianToDegree = 180 / Math.PI;
+var degreeToRadian = Math.PI / 180;
+
 function createDiv(content, classList, left, top){
     let div = document.createElement("div");
 

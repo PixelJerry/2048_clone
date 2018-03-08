@@ -11,6 +11,10 @@ class Vector{
     get magnitude(){
         return Math.sqrt( this.sqrMagnitude );
     }
+
+    get angle(){
+        return Math.atan(this.y / this.x);
+    }
     
     static add(vectorA, vectorB){
         return new Vector(vectorA.x + vectorB.x, vectorA.y + vectorB.y);
